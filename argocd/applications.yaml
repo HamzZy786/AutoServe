@@ -1,0 +1,102 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autoserve-dev
+  namespace: argocd
+  labels:
+    app: autoserve
+    environment: development
+spec:
+  project: autoserve
+  source:
+    repoURL: https://github.com/your-org/autoserve
+    targetRevision: develop
+    path: k8s/overlays/development
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: autoserve-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 3
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autoserve-staging
+  namespace: argocd
+  labels:
+    app: autoserve
+    environment: staging
+spec:
+  project: autoserve
+  source:
+    repoURL: https://github.com/your-org/autoserve
+    targetRevision: main
+    path: k8s/overlays/staging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: autoserve-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 3
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: autoserve-prod
+  namespace: argocd
+  labels:
+    app: autoserve
+    environment: production
+spec:
+  project: autoserve
+  source:
+    repoURL: https://github.com/your-org/autoserve
+    targetRevision: main
+    path: helm/autoserve
+    helm:
+      valueFiles:
+        - values-prod.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: autoserve-prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 3

@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: autoserve
+  labels:
+    app: frontend
+    tier: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: autoserve
+  labels:
+    app: backend
+    tier: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+    - name: metrics
+      port: 8001
+      targetPort: 8001
+      protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker
+  namespace: autoserve
+  labels:
+    app: worker
+    tier: worker
+spec:
+  selector:
+    app: worker
+  ports:
+    - name: metrics
+      port: 8002
+      targetPort: 8002
+      protocol: TCP
+  type: ClusterIP
+  clusterIP: None  # Headless service for worker
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-controller
+  namespace: autoserve
+  labels:
+    app: ml-controller
+    tier: ml-controller
+spec:
+  selector:
+    app: ml-controller
+  ports:
+    - name: http
+      port: 8003
+      targetPort: 8003
+      protocol: TCP
+    - name: metrics
+      port: 8004
+      targetPort: 8004
+      protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: autoserve
+  labels:
+    app: redis
+    tier: cache
+spec:
+  selector:
+    app: redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: 6379
+      protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: autoserve
+  labels:
+    app: postgres
+    tier: database
+spec:
+  selector:
+    app: postgres
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  type: ClusterIP

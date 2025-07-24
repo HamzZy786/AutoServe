@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namePrefix: prod-
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - deployment-patches.yaml
+
+configMapGenerator:
+  - name: app-config
+    literals:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=WARNING
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/autoserve_prod
+      - REDIS_URL=redis://redis:6379/2
+
+images:
+  - name: autoserve/frontend
+    newTag: latest
+  - name: autoserve/backend
+    newTag: latest
+  - name: autoserve/worker
+    newTag: latest
+  - name: autoserve/ml-controller
+    newTag: latest

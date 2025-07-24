@@ -1,0 +1,148 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ML Scaling Controller",
+    "tags": ["ml", "scaling", "ai"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Scaling Predictions",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "ml_scaling_prediction{job=\"autoserve-ml-controller\"}",
+            "legendFormat": "{{service}} - {{action}}"
+          }
+        ],
+        "yAxes": [
+          {"label": "Prediction Score", "show": true, "min": 0, "max": 1},
+          {"show": false}
+        ],
+        "gridPos": {"h": 9, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Model Accuracy",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "ml_model_accuracy{job=\"autoserve-ml-controller\"}",
+            "legendFormat": "Accuracy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 0.7},
+                {"color": "green", "value": 0.85}
+              ]
+            },
+            "unit": "percentunit"
+          }
+        },
+        "gridPos": {"h": 9, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Feature Importance",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "ml_feature_importance{job=\"autoserve-ml-controller\"}",
+            "legendFormat": "{{feature}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {"h": 9, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Scaling Events",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "increase(ml_scaling_events_total{job=\"autoserve-ml-controller\"}[5m])",
+            "legendFormat": "{{service}} - {{action}}"
+          }
+        ],
+        "yAxes": [
+          {"label": "Events", "show": true},
+          {"show": false}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 9}
+      },
+      {
+        "id": 5,
+        "title": "Cost Optimization",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "ml_cost_savings_percentage{job=\"autoserve-ml-controller\"}",
+            "legendFormat": "Cost Savings"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "green", "value": 20}
+              ]
+            },
+            "unit": "percent"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 9}
+      },
+      {
+        "id": 6,
+        "title": "Prediction Latency",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(ml_prediction_duration_seconds_bucket{job=\"autoserve-ml-controller\"}[5m])) by (le))",
+            "legendFormat": "95th Percentile"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 0.5}
+              ]
+            },
+            "unit": "s"
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 9}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s"
+  }
+}

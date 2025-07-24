@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: autoserve
+
+resources:
+  - namespace.yaml
+  - rbac/
+  - configmaps/
+  - services/
+  - deployments/
+  - ingress/
+  - hpa/
+  - pdb/
+  - network-policies/
+  - monitoring/
+
+components:
+  - ../components/hpa
+  - ../components/pdb
+  - ../components/rbac
+
+commonLabels:
+  app.kubernetes.io/part-of: autoserve
+  app.kubernetes.io/managed-by: kustomize
+
+images:
+  - name: autoserve/frontend
+    newTag: latest
+  - name: autoserve/backend
+    newTag: latest
+  - name: autoserve/worker
+    newTag: latest
+  - name: autoserve/ml-controller
+    newTag: latest

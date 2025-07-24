@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namePrefix: staging-
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - deployment-patches.yaml
+
+configMapGenerator:
+  - name: app-config
+    literals:
+      - ENVIRONMENT=staging
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/autoserve_staging
+      - REDIS_URL=redis://redis:6379/1
+
+images:
+  - name: autoserve/frontend
+    newTag: staging
+  - name: autoserve/backend
+    newTag: staging
+  - name: autoserve/worker
+    newTag: staging
+  - name: autoserve/ml-controller
+    newTag: staging

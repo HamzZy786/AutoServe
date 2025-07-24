@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: autoserve-sa
+  namespace: autoserve
+  labels:
+    app: autoserve
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ml-controller-sa
+  namespace: autoserve
+  labels:
+    app: ml-controller
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: autoserve
+  name: autoserve-role
+  labels:
+    app: autoserve
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: autoserve
+  name: ml-controller-role
+  labels:
+    app: ml-controller
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods", "nodes"]
+    verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: autoserve-rolebinding
+  namespace: autoserve
+  labels:
+    app: autoserve
+subjects:
+  - kind: ServiceAccount
+    name: autoserve-sa
+    namespace: autoserve
+roleRef:
+  kind: Role
+  name: autoserve-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ml-controller-rolebinding
+  namespace: autoserve
+  labels:
+    app: ml-controller
+subjects:
+  - kind: ServiceAccount
+    name: ml-controller-sa
+    namespace: autoserve
+roleRef:
+  kind: Role
+  name: ml-controller-role
+  apiGroup: rbac.authorization.k8s.io
