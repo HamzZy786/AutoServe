@@ -289,4 +289,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ for demonstrating modern DevOps, Kubernetes, and ML engineering practices.**
+**Built for demonstrating modern DevOps, Kubernetes, and ML engineering practices.**
